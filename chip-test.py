@@ -1,28 +1,38 @@
 #chip-test.py
+import matplotlib.pyplot as plt
 import numpy as np
 import math
-from scipy.signal import chirp, sweep_poly
-import matplotlib.pyplot as plt
+from scipy.fftpack import fft, rfft, ifft, irfft
 
 t = np.linspace(
-		0, 		# Start
-		2*np.pi, 	# End
-		5001 	# Resolution, number of samples generated
+		0, 					# Start
+		2*np.pi, 			# End
+		500  				# Resolution, number of samples generated
 	)
 
-w = chirp(
-		t, 					# Times to evaluate waveform
-		f0=1, 				# Frequency (Hz) at t=0
-		t1=1, 				# Time at which f1 is specified
-		f1=1, 				# Frequency (Hz) at time t1
-		method='linear',	# {linear, quadratic, logarithmic, hyperbolic}, optional
-		phi=(np.pi/2)			# Phase offset
-	)
-
-s0 = np.sin(t)
-s1 = np.sin(2*t)
+s0 = np.cos(t)
+s1 = np.cos(2*t)
 
 s_ = (s0 + s1)/2
 
-plt.plot(t,s_)
+#print rfft(s_)
+
+#plt.plot(t,rfft(s_))
+#plt.show()
+
+y = s_
+period = 2*np.pi
+
+def cn(n):
+   c = y*np.exp(-1j*2*n*np.pi*time/period)
+   return c.sum()/c.size
+
+def f(x, Nh):
+   f = np.array([2*cn(i)*np.exp(1j*2*i*np.pi*x/period) for i in range(1,Nh+1)])
+   return f.sum()
+
+y2 = np.array([f(time,50).real for time in t])
+
+plt.plot(t, y)
+plt.plot(t, y2)
 plt.show()
